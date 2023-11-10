@@ -10,4 +10,6 @@ router.get('/sub',categoryController.getSubCategories)
 router.put('/sub/:id',categoryController.updateSubCategory)
 
 
+
+
 module.exports = router
