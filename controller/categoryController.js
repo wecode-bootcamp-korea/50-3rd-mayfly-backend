@@ -1,8 +1,10 @@
 const categoryService = require("../services/categoryService")
 const {error} = require("../middleware/error")
+// const auth = require("../middleware/auth")
 
 const createTopCategory = async(req,res) =>{
   const {topCategoryName} = req.body
+  const {id} = req.admin
   try{
     if(!topCategoryName){
       const inputKeyError = error(500,"INPUT_KEY_ERROR")
@@ -37,6 +39,16 @@ const getTopCategories = async (req,res) =>{
 
   }catch(err){
     res.status(error.statusCode || 500).json({message:error.message})
+  }
+}
+const deleteTopCategory = async(req,res) =>{
+  const id = req.params.id
+  try{
+    await categoryService.deleteTopCategory(id)
+    res.status(204).json({message:""})
+
+  }catch(err){
+    res.status(error.statusCode||500)
   }
 }
 
@@ -77,6 +89,15 @@ const updateSubCategory = async(req,res) =>{
     res.status(err.statusCode|| 500).json({message:err.message})
   }
 }
+const deleteSubCategory = async(req,res)=>{
+  const id = req.params.id
+  try{
+     await categoryService.deleteSubCategory(id)
+     res.status(204).json({message: ""})
+  }catch(err){
+    res.status(statusCode||500)
+  }
+}
 
 module.exports = {
   getTopCategories,
@@ -84,5 +105,7 @@ module.exports = {
   updateTopCategory,
   getSubCategories,
   createSubCategory,
-  updateSubCategory
+  updateSubCategory,
+  deleteTopCategory,
+  deleteSubCategory
 }

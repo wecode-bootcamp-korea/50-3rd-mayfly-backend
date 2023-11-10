@@ -20,6 +20,10 @@ const updateTopCategory = async (id, topCategoryName) => {
   }
   return topCategory;
 };
+const deleteTopCategory = async(id) => {
+  const topCategory = await categoryDao.deleteTopCategory(id)
+  return topCategory
+} 
 const getSubCategories = async () => {
   const subCategory = await categoryDao.getSubCategories();
   if (subCategory.length === 0) {
@@ -39,9 +43,12 @@ const updateSubCategory = async (subCategoryName,topCategoryId,id) => {
   if(getSubCategory.length ===0 ){
     throw error(500, "해당 카테고리가 존재하지 않습니다.");
   }
-  console.log(getSubCategory)
   return subCategory;
 };
+const deleteSubCategory = async(id) =>{
+  const subCategory = await categoryDao.deleteSubCategory(id)
+  return subCategory
+}
 
 module.exports = {
   getTopCategories,
@@ -49,5 +56,7 @@ module.exports = {
   updateTopCategory,
   createSubCategory,
   getSubCategories,
-  updateSubCategory
+  updateSubCategory,
+  deleteTopCategory,
+  deleteSubCategory
 };
