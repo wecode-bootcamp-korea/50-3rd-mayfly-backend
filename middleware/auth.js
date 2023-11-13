@@ -1,5 +1,6 @@
 const token = require("jsonwebtoken");
 const secretkey = process.env.TYPEORM_SECRETKEY
+// const kakaoSecretKey = process.env.KAKAO_KEY
 const bcrypt = require("bcrypt");
 // 패스워드 암호화
 const makehash = async(password, saltRound) => {
@@ -9,9 +10,13 @@ const makehash = async(password, saltRound) => {
 const decode = async(password, hashedPassword) => {
     return await bcrypt.compare(password, hashedPassword);
 };
+// 토큰 검증
+const adminTokenDecode = async(jwtToken, secretkey) => {
+    return token.verify(jwtToken, secretkey);
+};
 // adminVerify토큰 검증
 const adminVerifyToken  = async (req, res, next) => {
-    const jwtToken = req.headers.authorization.substr(7)
+    const jwtToken = req.headers.authorization;
     if(!jwtToken){
         res.status(403).json({message : "권한이 없습니다"})
     }else{
@@ -20,41 +25,42 @@ const adminVerifyToken  = async (req, res, next) => {
             req.admin = decoded;
             next();
         }catch(err){
-            return res.status(403).json({message : "권한이 없습니다"})
+            return res.status(403).json({message : "권한이 없습니다."})
         }
     }
-}
-// 토큰 검증
-const adminTokenDecode = async(jwtToken, secretkey) => {
-    return token.verify(jwtToken, secretkey);
-}
+};
 const adminCreateToken = async(id, admin_id) => {
     const payload = {id, admin_id};
     return token.sign(payload, secretkey)
-}
+};
+// 토큰 검증
+const userTokenDecode = async(jwtToken, secretkey) => {
+    return token.verify(jwtToken, secretkey);
+};
 // userVerify토큰 검증
 const userVerifyToken  = async (req, res, next) => {
-    const jwtToken = req.headers.authorization;
+    const jwtToken = req.headers.authorization
     if(!jwtToken){
         res.status(403).json({message : "권한이 없습니다"})
     }else{
         try{
             const decoded = await userTokenDecode(jwtToken, secretkey);
-            req.user = decoded;
+            req.users = decoded;
             next();
         }catch(err){
-            return res.status(403).json({message : "권한이 없습니다"})
+            return res.status(403).json({message : "권한이 없습니다2."})
         }
     }
-}
+};
+const userCreateToken = async(id, name, email) => {
+    const payload = {id, name, email};
+    const options = {expiresIn: 720000};
+    return token.sign(payload, secretkey, options)
+};
 // 토큰 검증
-const userTokenDecode = async(jwtToken, secretkey) => {
+const hostTokenDecode = async(jwtToken, secretkey) => {
     return token.verify(jwtToken, secretkey);
-}
-const userCreateToken = async(id, email) => {
-    const payload = {id, email};
-    return token.sign(payload, secretkey)
-}
+};
 // hostVerify토큰 검증
 const hostVerifyToken  = async (req, res, next) => {
     const jwtToken = req.headers.authorization;
@@ -63,21 +69,18 @@ const hostVerifyToken  = async (req, res, next) => {
     }else{
         try{
             const decoded = await hostTokenDecode(jwtToken, secretkey);
-            req.host = decoded;
+            req.hosts = decoded;
             next();
         }catch(err){
-            return res.status(403).json({message : "권한이 없습니다"})
+            return res.status(403).json({message : "권한이 없습니다."})
         }
     }
-}
-// 토큰 검증
-const hostTokenDecode = async(jwtToken, secretkey) => {
-    return token.verify(jwtToken, secretkey);
-}
-const hostCreateToken = async(id, email) => {
-    const payload = {id, email};
-    return token.sign(payload, secretkey)
-}
+};
+const hostCreateToken = async(id, name, email) => {
+    const payload = {id, name, email};
+    const options = {expiresIn: 720000};
+    return token.sign(payload, secretkey, options)
+};
 module.exports = {
     adminVerifyToken, adminTokenDecode, adminCreateToken, userVerifyToken, userTokenDecode, userCreateToken,
     hostVerifyToken, hostTokenDecode, hostCreateToken, makehash, decode

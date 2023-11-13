@@ -1,0 +1,126 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Simple Chat</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        let socket;
+
+        window.onload = () => {
+            // socket 연결
+            socket = io.connect("/");
+
+            // 이전 메시지를 가져오는 함수
+            fetchMessages();
+
+            // message 수신 이벤트
+            socket.on('message', data => {
+                makeChatDiv(data.sender, data.content, data.created_at, data.chatId);
+            });
+        };
+
+        const fetchMessages = () => {
+            fetch('http://localhost:8000/message')
+                .then(response => response.json())
+                .then(messages => {
+                    messages.reverse().forEach(message => {
+                        makeChatDiv(message.sender, message.content, message.created_at, message.chatId);
+                    });
+                })
+                .catch(error => console.error('Error fetching messages:', error));
+        };
+
+        // 버튼 클릭 시 메시지 송신
+        const sendMessage = (tokenType) => {
+            let sender = document.getElementById("sender").value;
+            let content = document.getElementById("content").value;
+            let chatId = document.getElementById("chatId").value;
+
+            document.getElementById("sender").value = "";
+            document.getElementById("content").value = "";
+            document.getElementById("chatId").value = "";
+
+            // 웹 소켓을 통해 메시지를 서버로 전송
+            socket.emit("message", {
+                sender,
+                content,
+                chatId,
+                date: new Date(),
+            });
+
+            // HTTP POST 요청을 통해 메시지를 서버에 저장
+            const token = getToken(tokenType);
+
+            fetch('http://localhost:8000/message/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `${token}`
+                },
+                body: JSON.stringify({
+                    sender,
+                    content,
+                    chatId,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => console.log('Message saved:', data))
+            .catch(error => console.error('Error saving message:', error));
+        };
+
+        const getToken = (tokenType) => {
+            // 실제로는 서버에서 토큰을 받아오는 로직을 구현해야 합니다.
+            // 여기서는 테스트로 고정된 토큰을 반환하도록 구현하겠습니다.
+            if (tokenType === 'user') {
+                return "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIsIm5hbWUiOiLsnoTsi5ztmIQiLCJlbWFpbCI6ImpzbTAwOTI5QG5hdmVyLmNvbSIsInBob25lX251bWJlciI6Iis4MiAxMC05MTU5LTA1MDYiLCJpYXQiOjE2OTk4NTU1MTEsImV4cCI6MTcwMDU3NTUxMX0.v7BvRz-IPsCe9caBmoFLhAhNUpAbqv-02m93HnHQBrk";
+            } else if (tokenType === 'host') {
+                return "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjksIm5hbWUiOiLquYDrrLjsmIEiLCJlbWFpbCI6Im1uNTJpbEBuYXZlci5jb20iLCJwaG9uZV9udW1iZXIiOiIrODIgMTAtNzU2Ni0xMDA1IiwiaWF0IjoxNjk5ODUyOTIyLCJleHAiOjE3MDA1NzI5MjJ9.xXkTtAVKIt20xCfIUbOvSeoY44pi-ScH6Agy9jdd4fE";
+            } else {
+                return "";
+            }
+        };
+
+        // message 수신 시 채팅 컴포넌트 생성
+        const makeChatDiv = (sender, content, date, chatId) => {
+            let div = document.createElement("div");
+            let senderH3 = document.createElement("h3");
+            let contentP = document.createElement("p");
+            let dateP = document.createElement("p");
+
+            senderH3.innerHTML = sender;
+            contentP.innerHTML = content;
+            dateP.innerHTML = date;
+
+            div.appendChild(senderH3);
+            div.appendChild(contentP);
+            div.appendChild(dateP);
+
+            div.className = "chat";
+            div.dataset.chatId = chatId;
+
+            document.getElementById("chatbox").prepend(div);
+        };
+    </script>
+    <style>
+        .chat {
+            border: 1px solid black;
+            width: 400px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Simple Chat</h1>
+    <input id="sender" type="text" placeholder="sender" />
+    <input id="content" type="text" placeholder="content" />
+    <input id="chatId" type="text" placeholder="chatId" /> <!-- Added chatId input field -->
+
+    <!-- 각 버튼에 대해 해당 토큰을 전달하도록 수정 -->
+    <button onclick="sendMessage('user')">유저로 보내기</button>
+    <button onclick="sendMessage('host')">호스트로 보내기</button>
+
+    <hr />
+    <div id="chatbox"></div>
+</body>
+</html>
