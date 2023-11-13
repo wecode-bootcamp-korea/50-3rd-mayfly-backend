@@ -11,7 +11,7 @@ const decode = async(password, hashedPassword) => {
 };
 // adminVerify토큰 검증
 const adminVerifyToken  = async (req, res, next) => {
-    const jwtToken = req.headers.authorization.substr(7)
+    const jwtToken = req.headers.authorization
     if(!jwtToken){
         res.status(403).json({message : "권한이 없습니다"})
     }else{
