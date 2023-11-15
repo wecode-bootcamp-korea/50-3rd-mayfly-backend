@@ -2,8 +2,8 @@ const classesService = require("../services/classesService");
 
 const getClassesList = async(req,res) => {
   try{
-    let { topCategoryName, subCategoryName, sortBy, search} = req.query;
-    console.log(req.query);
+    let { topCategoryName, subCategoryName, sortBy, search} = req.body;
+    console.log(req.body);
     const result = await classesService.getClassesList(
       topCategoryName,subCategoryName, sortBy, search
     );
@@ -67,7 +67,8 @@ const createClass = async(req,res) => {
 };
 const updateClass = async(req,res) => {
   try{
-    const hostId = req.hosts.id;
+    // const hostId = req.hosts.id;
+    const hostId = 3;
     const classId = req.params.classId;
     const result = await classesService.updateClass(hostId,classId,req);
     return res.status(200).json({ message: result});

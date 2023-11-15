@@ -20,9 +20,13 @@ const getClassesList = async (topCategoryQuery,subCategoryQuery,searchQuery,orde
   ${orderingQuery}
   ${limit}
   `);
-
   return result;
-
+};
+const getSubCategories = async(topCategoryName) =>{
+  const query = 'SELECT id FROM top_categories WHERE name = ?'
+  const getTopCategoryIdBySubCategoryName = await appDataSource.query(query,[topCategoryName])
+  const query2= 'SELECT name FROM sub_categories WHERE top_category_id = ?'
+  return await appDataSource.query(query2,[getTopCategoryIdBySubCategoryName[0].id]);
 };
 const getUpcomingClasses = async() => {
   const result = await appDataSource.query(`
@@ -175,6 +179,7 @@ const modifyImages = async(name,imageSource,classId,transaction) => {
 
 module.exports = {
   getClassesList,
+  getSubCategories,
   getUpcomingClasses,
   getClassDetailByClassId,
   getUserClassesListByUserId,

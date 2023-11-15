@@ -20,9 +20,8 @@ const getClassesList = async (topCategoryName, subCategoryName, sortBy, search) 
     ? `AND (c.title like '%${search}%' OR c.content like '%${search}%')`
     : "";
   const topCategoryQuery = topCategoryName ? `AND t.name = '${topCategoryName}'` : "";
-  const subCategoryQuery = subCategoryName ? `AND s.name = '${subCategoryName}'` : "";
-  const limit = ""
-  
+  const subCategoryQuery = subCategoryName ? `AND s.name = '${subCategoryName}' AND t.name = '${topCategoryName}'` : "";
+  const limit = "";
   const result = await classesDao.getClassesList(
     topCategoryQuery,
     subCategoryQuery,
@@ -30,8 +29,12 @@ const getClassesList = async (topCategoryName, subCategoryName, sortBy, search) 
     orderingQuery,
     limit
   );
+  let result2 = [];
+  if (topCategoryName) {
+    result2 = await classesDao.getSubCategories(topCategoryName);
+  }
   
-    return result;
+  return { classList: result, subCategoriesName: result2 };
 };
 const getUpcomingClasses = async() =>{
   const salesDesc = "ORDER BY c.sales DESC, c.id ASC";
