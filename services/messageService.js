@@ -1,7 +1,7 @@
 const messageDao = require('../models/messageDao')
 
-const createMessage = async(name,content,chatId) =>{
-  message = await messageDao.createMessage(name,content,chatId)
+const createMessage = async(sender,content,chatId) =>{
+  message = await messageDao.createMessage(sender,content,chatId)
   return message
 }
 

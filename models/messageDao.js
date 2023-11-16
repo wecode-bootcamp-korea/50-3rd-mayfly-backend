@@ -1,9 +1,9 @@
 const { appDataSource } = require("./datasource");
 
-const createMessage = async(name,content,chatId) =>{
+const createMessage = async(sender,content,chatId) =>{
   const result = await appDataSource.query(`
   INSERT INTO message(chat_id,content,sender,created_at) 
-  VALUES('${chatId}','${content}','${name}',NOW())
+  VALUES('${chatId}','${content}','${sender}',NOW())
   `)
   return result;
 }
