@@ -1,10 +1,6 @@
 const imageDao = require('../models/imageDao');
 const { error } = require("../middleware/error");
 
-// const saveImage = async (imageUrl) => {
-//     const image = await imageDao.createImages(imageUrl);
-//     return image
-// };
 const getImages = async()=>{
   const images = await imageDao.getImages()
   if(images.length === 0){
@@ -26,7 +22,6 @@ const deleteImage = async(id) => {
 }
 
 module.exports = {
-  // saveImage,
   getImages,
   getImage,
   deleteImage
