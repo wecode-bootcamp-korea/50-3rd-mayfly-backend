@@ -1,0 +1,11 @@
+# docker-compose.yml
+version: '3'
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: dockerfile
+    # volumes:
+    #   - ./node_modules:/src/node_modules  
+    ports:
+      - "8000:8000"

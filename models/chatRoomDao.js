@@ -6,6 +6,12 @@ const createChatRoom = async(userId,hostId) =>{
   `)
 }
 
+const getChatRoom = async(userId)=>{
+  return appDataSource.query(`
+  SELECT * FROM chat WHERE user_id = '${userId}'
+  `)
+}
+
 module.exports = {
-  createChatRoom
+  createChatRoom,getChatRoom
 }

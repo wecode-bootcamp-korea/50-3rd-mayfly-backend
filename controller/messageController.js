@@ -6,9 +6,9 @@ const createMessage = async (req, res) => {
     let sender
     if(req.users){
       sender = req.users.name
-      console.log('1111',req.users)
     }else if(req.hosts){
       sender = req.hosts.name
+      console.log(sender)
     }
     // io.sockets.emit("message",{
     //   content: message.content,
