@@ -10,7 +10,7 @@ const getSchedulesByclassId = async(hostId, classId) => {
 
   return await schedulesDao.getSchedulesByclassId(classId);
 };
-//cosole.log 삭제 필요
+
 const createSchedules = async (hostId, classId, scheduleData) => {
   const [compareByHostId] = await classesDao.getClassDetailByClassId(classId);
   if (compareByHostId.hostId !== hostId) {
@@ -41,13 +41,14 @@ const createSchedules = async (hostId, classId, scheduleData) => {
       errors.push({ index: i, error: error.message });
     };
   };
+
   return {
     message: successfulCount > 0 ? `${successfulCount} CREATE_SCHEDULES_SUCCESS` : "ALL_SCHEDULES_CREATE_FAILED",
     errors
   };
 };
 
-const updateSchedule = async (hostId, scheduleId, data) => {
+const updateSchedule = async (hostId, scheduleId, scheduleData) => {
   try {
     const [compareByHostID] = await schedulesDao.getScheduleByHostId(scheduleId, hostId);
     if (compareByHostID.length === 0) {
@@ -59,7 +60,7 @@ const updateSchedule = async (hostId, scheduleId, data) => {
       error(400, 'CANNOT_UPDATE_CLASS_AS_SCHEDULES_ENROLLED_MEMBER');
     };
 
-    const { classDay, classHour, maxMember } = data;
+    const { classDay, classHour, maxMember } = scheduleData;
     if (!classDay || !classHour || !maxMember) {
       error(400, 'ALL_FIELDS_MUST_BE_FILLED');
     };
@@ -77,6 +78,7 @@ const updateSchedule = async (hostId, scheduleId, data) => {
     return { error: err.message, statusCode: err.statusCode || 500 };
   }
 };
+
 const deleteSchedule = async (hostId, scheduleId) => {
   try {
     const compareByHostID = await schedulesDao.getScheduleByHostId(scheduleId, hostId);

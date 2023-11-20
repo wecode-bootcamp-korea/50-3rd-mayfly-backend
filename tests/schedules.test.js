@@ -120,7 +120,7 @@ describe("UPDATE_SCHEDULE", () => {
     };
 
     const res = await request(app)
-    .put(`/schedules/update/${scheduleId}`)
+    .put(`/schedules/${scheduleId}`)
     .set('Authorization', `${token}`)
     .send(updateData);
   

@@ -40,7 +40,12 @@ const getUpcomingClasses = async() => {
   INNER JOIN top_categories t ON c.top_category_id = t.id
   INNER JOIN sub_categories sc ON c.sub_category_id = sc.id
   INNER JOIN hosts h ON c.host_id = h.id
-  WHERE c.deleted_at IS NULL AND s.status = 1 AND s.class_day >= CURDATE() AND i.name like 'main' AND s.max_member >= s.enrolled_member
+  WHERE 
+    c.deleted_at IS NULL AND s.status = 1 
+  AND 
+    s.class_day >= CURDATE() 
+  AND
+    i.name like 'main' AND s.max_member >= s.enrolled_member
   ORDER BY s.class_day ASC, TIME_FORMAT(s.class_day, '%H:%i:%s') ASC
   LIMIT 5
   `);
@@ -68,7 +73,10 @@ const getClassDetailByClassId = async(classId) => {
   INNER JOIN hosts h ON c.host_id = h.id
   INNER JOIN top_categories t ON c.top_category_id = t.id
   INNER JOIN sub_categories sb ON c.sub_category_id = sb.id
-  WHERE c.deleted_at IS NULL AND c.id = ${classId}
+  WHERE 
+    c.deleted_at IS NULL
+  AND 
+    c.id = ${classId}
   GROUP BY c.id, p.address, p.latitude, p.longitude
   ORDER BY MIN(s.class_day) ASC, MIN(s.class_hour) ASC;
   `)
@@ -146,26 +154,48 @@ const findSubCategoryIdByName = async (subCategoryName, topCategoryId,transactio
   return await transaction.query(query, [subCategoryName, topCategoryId]);
 };
 const createPlace = async (address, latitude, longitude, transaction) => {
-  const query = `INSERT INTO places (address, latitude, longitude, created_at) VALUES (?, ?, ?, NOW())`;
+  const query = `
+  INSERT INTO places 
+    (address, latitude, longitude, created_at) 
+  VALUES 
+    (?, ?, ?, NOW())`;
   const placeResult = await transaction.query(query, [address, latitude, longitude]);
   return placeResult.insertId;
 };
 const createClass = async(host_id, title, summary, content, price, placeId, getTopCategoryId, getSubCategoryId, transaction) => {
-  const query = `INSERT INTO classes (host_id, title, summary, content, price, sales, place_id, top_category_id, sub_category_id, created_at) VALUES (?, ?, ?, ?, ?, 0, ?, ?, ?, NOW())`;
+  const query = `
+  INSERT INTO classes
+    (host_id, title, summary, content, price, sales, place_id, top_category_id, sub_category_id, created_at) 
+  VALUES
+    (?, ?, ?, ?, ?, 0, ?, ?, ?, NOW())`;
   const classResult = await transaction.query(query, [host_id, title, summary, content, price, placeId, getTopCategoryId, getSubCategoryId]);
   return classResult.insertId;
 };
 const createImage = async (classId, name, imageSource, transaction) => {
-  const query = `INSERT INTO images (class_id, name, image_source) VALUES (?, ?, ?)`;
+  const query = `
+  INSERT INTO images
+    (class_id, name, image_source)
+  VALUES
+    (?, ?, ?)`;
   const imageResult = await transaction.query(query, [classId, name, imageSource]);
   return imageResult;
 };
 const schedulesStatusCheckByclassId = async(classId) => {
-  const query = `SELECT * FROM schedules WHERE class_id = ? AND (status = 1 AND enrolled_member != 0)`;
+  const query = `
+  SELECT * 
+  FROM schedules 
+  WHERE 
+    class_id = ? 
+  AND 
+    (status = 1 AND enrolled_member != 0)`;
   return await appDataSource.query(query,[classId]);
 };
 const deleteClassByClassId = async(classId) => {
-  const query = `UPDATE classes SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?;`
+  const query = `
+  UPDATE classes 
+  SET 
+    deleted_at = CURRENT_TIMESTAMP 
+  WHERE id = ?`
   return result = await appDataSource.query(query,[classId]);
 };
 const getPlaceIdByClassId = async(classId,transaction) => {
@@ -174,15 +204,35 @@ const getPlaceIdByClassId = async(classId,transaction) => {
 };
 //업데이트
 const modifyPlaces = async(getPlaceId,address,latitude,longitude,transaction) => {
-  const query = `UPDATE places SET address = ?, latitude = ?, longitude = ? WHERE id = ?`
+  const query = `
+  UPDATE places 
+  SET
+    address = ?,
+    latitude = ?,
+    longitude = ?
+  WHERE id = ?`
   return await transaction.query(query,[address,latitude,longitude,getPlaceId])
 };
 const modifyClasses = async(classId,title,summary,content,price,getTopCategoryId,getSubCategoryId,transaction) => {
-  const query = `UPDATE classes SET title = ?, summary = ?, content = ?, price = ? , top_category_id = ?, sub_category_id = ? WHERE id = ?`
+  const query = `
+  UPDATE classes 
+  SET 
+    title = ?,
+    summary = ?,
+    content = ?,
+    price = ?,
+    top_category_id = ?,
+    sub_category_id = ?
+  WHERE id = ?`
   return await transaction.query(query,[title,summary,content,price,getTopCategoryId,getSubCategoryId,classId])
 };
 const modifyImages = async(imageSource,classId,name,transaction) => {
-  const query = `UPDATE images SET image_source = ? WHERE class_id = ? AND name = ?`
+  const query = `
+  UPDATE images 
+  SET 
+    image_source = ?
+  WHERE 
+    class_id = ? AND name = ?`
   return await transaction.query(query,[imageSource,classId,name])
 };
 const checkAdminByAdminId = async (adminId) => {

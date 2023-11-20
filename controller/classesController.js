@@ -1,16 +1,16 @@
 const classesService = require("../services/classesService");
-//console.log 삭제 필요
+
 const getClassesList = async(req,res) => {
   try{
     let { topCategoryName, subCategoryName, sortBy, search} = req.query;
-    console.log(req.query);
+    console.log(req.query); //임시 확인용 삭제예정
     const result = await classesService.getClassesList(
       topCategoryName,subCategoryName, sortBy, search
     );
     return res.status(200).json({ result });
   } catch (err) {
     console.log(err);
-    return res.status(500).json({ message: err.message });
+    res.status(err.statusCode || 500).json({ message: err.message });
   };
 };
 
@@ -21,10 +21,11 @@ const getUpcomingClasses = async(req,res) => {
 
   } catch (err) {
     console.log(err);
-    return res.status(500).json({ message: err.message });
+    res.status(err.statusCode || 500).json({ message: err.message });
   };
 
 };
+
 const getClassesDetail = async(req, res) => {
   try {
     const classId = req.params.classId;
@@ -57,10 +58,22 @@ const getHostClassesList =  async(req,res) => {
     return res.status(err.statusCode || 500).json({ message: err.message });
   };
 };
+
 const createClass = async(req,res) => {
   try{
     const hostId = req.hosts.id;
-    const result = await classesService.createClass(hostId,req);
+    const {
+      address,
+      title,
+      summary,
+      content,
+      price,
+      topCategoryName,
+      subCategoryName,
+      mainImageSource,
+      subImageSource
+    } = req.body;
+    const result = await classesService.createClass(hostId, address, title, summary, content, price, topCategoryName, subCategoryName, mainImageSource, subImageSource);
     return res.status(200).json({ result });
   } catch(err) {
     console.error(err);
@@ -72,7 +85,18 @@ const updateClass = async(req,res) => {
   try{
     const hostId = req.hosts.id;
     const classId = req.params.classid;
-    const result = await classesService.updateClass(hostId,classId,req);
+    const {
+      address,
+      title,
+      summary,
+      content,
+      price,
+      topCategoryName,
+      subCategoryName,
+      mainImageSource,
+      subImageSource
+    } = req.body;
+    const result = await classesService.updateClass(hostId, classId, address, title, summary, content, price, topCategoryName, subCategoryName, mainImageSource, subImageSource);
     return res.status(200).json({ message: result });
   } catch(err) {
     console.error(err);
