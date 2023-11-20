@@ -15,13 +15,11 @@ const getClassesList = async (topCategoryName, subCategoryName, sortBy, search) 
     return sortOptions[sortBy] || sortOptions.default;
   };
   const orderingQuery = await ordering(sortBy);
-
-  const searchQuery = search
-    ? `AND (c.title like '%${search}%' OR c.content like '%${search}%')`
-    : "";
+  const searchQuery = search ? `AND (c.title like '%${search}%' OR c.content like '%${search}%')` : "";
   const topCategoryQuery = topCategoryName ? `AND t.name = '${topCategoryName}'` : "";
   const subCategoryQuery = subCategoryName ? `AND s.name = '${subCategoryName}' AND t.name = '${topCategoryName}'` : "";
   const limit = "";
+
   const result = await classesDao.getClassesList(
     topCategoryQuery,
     subCategoryQuery,
@@ -29,11 +27,12 @@ const getClassesList = async (topCategoryName, subCategoryName, sortBy, search) 
     orderingQuery,
     limit
   );
+
   let result2 = [];
   if (topCategoryName) {
     result2 = await classesDao.getSubCategories(topCategoryName);
-  }
-  
+  };
+
   return { classList: result, subCategoriesName: result2 };
 };
 const getUpcomingClasses = async() =>{
@@ -44,20 +43,80 @@ const getUpcomingClasses = async() =>{
   const salesOrder = await classesDao.getClassesList('', '', '', salesDesc,limit);
   const newProductOrder = await classesDao.getClassesList('', '', '', newest,limit);
   const upcomingClasses = await classesDao.getUpcomingClasses();
-  return {salesOrder,newProductOrder,upcomingClasses}
+  return { salesOrder, newProductOrder, upcomingClasses }
 };
 const getClassDetail = async(classId) => {
-  const result = await classesDao.getClassDetailByClassId(classId);
-  return result;
+  const [result] = await classesDao.getClassDetailByClassId(classId);
+  const scheduleInfoString = result.schedule_info;
+  const cleanedScheduleInfoString = scheduleInfoString.replace(/\//g, '');
+  let scheduleInfoArray = [];
+
+  if (cleanedScheduleInfoString) {
+    try {
+      scheduleInfoArray = JSON.parse(`[${cleanedScheduleInfoString}]`);
+    } catch (error) {
+      console.error('스케줄 정보 파싱 오류:', error);
+    }
+  }
+  const structuredData = {
+    id: result.id,
+    title: result.title,
+    name: result.name,
+    summary: result.summary,
+    content: result.content,
+    price: result.price,
+    top_category_name: result.top_category_name,
+    sub_category_name: result.sub_category_name,
+    hostId: result.hostId,
+    schedule_info: scheduleInfoArray,
+    main_image_source: result.main_image_source,
+    sub_image_source: result.sub_image_source,
+    address: result.address,
+    latitude: result.latitude,
+    longitude: result.longitude
+  };
+  return structuredData;  
 };
 const getMyClassesList = async(userId) =>{
   const result = await classesDao.getUserClassesListByUserId(userId);
   return result;
-}
+};
 const getHostClassesList = async(hostId) => {
   const result = await classesDao.getHostClassesLisgByHostId(hostId);
-  return result;
-};
+  const result2 = [];
+  for (let i = 0; i < result.length; i++) {
+    const scheduleInfoString = result[i].schedule_info;
+    const cleanedScheduleInfoString = scheduleInfoString.replace(/\//g, '');
+    let scheduleInfoArray = [];
+    if (cleanedScheduleInfoString) {
+      try {
+        scheduleInfoArray = JSON.parse(`[${cleanedScheduleInfoString}]`);
+      } catch (error) {
+        console.error('스케줄 정보 파싱 오류:', error);
+      };
+    };
+    const structuredData = {
+      id: result[i].id,
+      title: result[i].title,
+      name: result[i].name,
+      summary: result[i].summary,
+      content: result[i].content,
+      price: result[i].price,
+      top_category_name: result[i].top_category_name,
+      sub_category_name: result[i].sub_category_name,
+      hostId: result[i].hostId,
+      schedule_info: scheduleInfoArray,
+      main_image_source: result[i].main_image_source,
+      sub_image_source: result[i].sub_image_source,
+      address: result[i].address,
+      latitude: result[i].latitude,
+      longitude: result[i].longitude
+    };
+    result2.push(structuredData);
+  };
+return result2;
+};  
+
 //console.log(axiosResult.data.documents[0]) 삭제필요
 const createClass = async(hostId,req) => {
   try {   
@@ -73,9 +132,7 @@ const createClass = async(hostId,req) => {
     });     
     const latitude = axiosResult.data.documents[0].address.y;
     const longitude = axiosResult.data.documents[0].address.x;
-    //수정 필요
-    console.log(axiosResult.data.documents[0]);
-    console.log('위도,경도',latitude,longitude);
+
      // 트랜잭션을 사용하는 부분 ㅠㅠ
     await appDataSource.transaction(async transaction => {
       //카테고리 name으로 id 찾아오기
@@ -103,14 +160,14 @@ const createClass = async(hostId,req) => {
   };
 };
 const deleteClass = async(hostId,classId)=>{
-  const compareByHostId = await classesDao.getClassDetailByClassId(classId);
+  const [compareByHostId] = await classesDao.getClassDetailByClassId(classId);
   //강의의 강사와 토큰의 강사의 id가 일치하는지 검증
   if(compareByHostId.hostId !== hostId){
     error(400,'USER_DOES_NOT_MATCH');
-  };
+  }; 
   const checkSchedulesStatus = await classesDao.schedulesStatusCheckByclassId(classId);
-  if(checkSchedulesStatus>0){
-    error(400,'CANNOT_DELETE_CLASS_AS_SCHEDULES_STATUS');
+  if(checkSchedulesStatus.length>0){
+    error(400,'CANNOT_DELETE_CLASS_AS_SCHEDULES_ENROLLED_MEMBER');
   };
   const result = await classesDao.deleteClassByClassId(classId);
   return result;
@@ -135,9 +192,7 @@ const updateClass = async(hostId,classId,req) => {
     });     
     const latitude = axiosResult.data.documents[0].address.y;
     const longitude = axiosResult.data.documents[0].address.x;
-    //수정 필요
-    console.log(axiosResult.data.documents[0]);
-    console.log('위도,경도',latitude,longitude);
+  
     await appDataSource.transaction(async transaction => {
       //카테고리 name 으로 id 찾기
       const topCategoryResult = await classesDao.findTopCategoryIdByName(topCategoryName,transaction);
@@ -158,16 +213,42 @@ const updateClass = async(hostId,classId,req) => {
       //classes 테이블 수정
       await classesDao.modifyClasses(classId,title,summary,content,price,getTopCategoryId,getSubCategoryId,transaction);
       //images 테이블 수정
-      await classesDao.modifyImages('main',mainImageSource,classId,transaction)
-      await classesDao.modifyImages('sub',subImageSource,classId,transaction)
+      await classesDao.modifyImages(mainImageSource,classId,'main', transaction)
+      await classesDao.modifyImages(subImageSource,classId,'sub', transaction)
     });
-    return { message: "UPDATE_CLASS_SUCCESS" };  
-     
-  } catch(err){
+    return { message: "UPDATE_CLASS_SUCCESS" };
+  } catch(err) {
     console.error(err);
     throw err; 
   };
 };
+const deleteClassByAdmin = async(adminId,classId) => {
+  const checkAdmin = await classesDao.checkAdminByAdminId(adminId);
+  if(checkAdmin.length === 0){
+    error(400,"USER_DOES_NOT_MATCH");
+  };
+  const result = await classesDao.deleteClassByClassId(classId);
+  return result;
+};
+
+const reactivateClassByAdmin = async(adminId,classId) => {
+  const checkAdmin = await classesDao.checkAdminByAdminId(adminId);
+  if(checkAdmin.length === 0){
+    error(400,"USER_DOES_NOT_MATCH");
+  };
+  const result = await classesDao.reactivateClassByAdmin(classId);
+  return result;
+};
+
+const allClassesListByAdmin = async(adminId) => {
+  const checkAdmin = await classesDao.checkAdminByAdminId(adminId);
+  if(checkAdmin.length === 0){
+    error(400,"USER_DOES_NOT_MATCH");
+  };
+  const result = await classesDao.allClassesListByAdmin();
+  return { result};
+};
+
 module.exports = {
   getClassesList,
   getUpcomingClasses,
@@ -176,5 +257,8 @@ module.exports = {
   getHostClassesList,
   createClass,
   deleteClass,
-  updateClass
+  updateClass,
+  deleteClassByAdmin,
+  reactivateClassByAdmin,
+  allClassesListByAdmin
 };
