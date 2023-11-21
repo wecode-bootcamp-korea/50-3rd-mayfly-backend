@@ -2,6 +2,7 @@ const request = require("supertest");
 const createApp = require("../app");
 const { appDataSource } = require("../models/datasource");
 const { setupDatabase, resetDatabase } = require('./testSetup');
+const token = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MzQsIm5hbWUiOiLstZzrr7zsp4AiLCJlbWFpbCI6ImFsc3dsODE4NEBuYXZlci5jb20iLCJwaG9uZV9udW1iZXIiOiIwMTAtMTExMS05OTk5Iiwicm9sZSI6Imhvc3RzIiwiaWF0IjoxNzAwNTQ1NjgyLCJleHAiOjE3MDEyNjU2ODJ9.8V1tTOzgJOFcCdmBiiJGtIkE298k7BsQhUbk733D3pg`;
 
 //한 강의 모든 스케줄 가져오기
 describe("Get_all_schedules", () => {
@@ -19,7 +20,6 @@ describe("Get_all_schedules", () => {
 
   test("SUCCESS: Get schedules by class ID with token", async () => {
     const classId = 1;
-    const token = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MzQsIm5hbWUiOiLstZzrr7zsp4AiLCJlbWFpbCI6ImFsc3dsODE4NEBuYXZlci5jb20iLCJwaG9uZV9udW1iZXIiOiIwMTAtNTcwNC04NDg0Iiwicm9sZSI6Imhvc3RzIiwiaWF0IjoxNzAwMTk2MjQ4LCJleHAiOjE3MDA5MTYyNDh9.djPth_b9BC8H8dNNpr3R0LnuUbC9pQ3oeYlihvzUwyA`;
     const res = await request(app)
       .get(`/schedules/${classId}`)
       .set('Authorization', `${token}`)
@@ -74,7 +74,6 @@ describe("Post_New_Schedule", () => {
 
   test("SUCCESS: 새 스케줄을 등록해보자", async () => {
     const classId = 1;
-    const token = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MzQsIm5hbWUiOiLstZzrr7zsp4AiLCJlbWFpbCI6ImFsc3dsODE4NEBuYXZlci5jb20iLCJwaG9uZV9udW1iZXIiOiIwMTAtNTcwNC04NDg0Iiwicm9sZSI6Imhvc3RzIiwiaWF0IjoxNzAwMTk2MjQ4LCJleHAiOjE3MDA5MTYyNDh9.djPth_b9BC8H8dNNpr3R0LnuUbC9pQ3oeYlihvzUwyA`;
     const newScheduleData = {
       schedule_info: [
         { classDay: "2023-12-04 09:00", classHour: "2", maxMember: 10 },
@@ -112,7 +111,6 @@ describe("UPDATE_SCHEDULE", () => {
 
   test("SUCCESS: 스케줄의 내용을 수정해보자", async () => {
     const scheduleId = 1;
-    const token = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MzQsIm5hbWUiOiLstZzrr7zsp4AiLCJlbWFpbCI6ImFsc3dsODE4NEBuYXZlci5jb20iLCJwaG9uZV9udW1iZXIiOiIwMTAtNTcwNC04NDg0Iiwicm9sZSI6Imhvc3RzIiwiaWF0IjoxNzAwMTk2MjQ4LCJleHAiOjE3MDA5MTYyNDh9.djPth_b9BC8H8dNNpr3R0LnuUbC9pQ3oeYlihvzUwyA`;
     const updateData = {
       classDay: "2023-12-12 12:12",
       classHour: "3",
@@ -149,7 +147,6 @@ describe("DELETE_SCHEDULE", () => {
 
   test("SUCCESS: 스케줄을 삭제해보자", async () => {
     const scheduleId = 1;
-    const token = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MzQsIm5hbWUiOiLstZzrr7zsp4AiLCJlbWFpbCI6ImFsc3dsODE4NEBuYXZlci5jb20iLCJwaG9uZV9udW1iZXIiOiIwMTAtNTcwNC04NDg0Iiwicm9sZSI6Imhvc3RzIiwiaWF0IjoxNzAwMTk2MjQ4LCJleHAiOjE3MDA5MTYyNDh9.djPth_b9BC8H8dNNpr3R0LnuUbC9pQ3oeYlihvzUwyA`;
     const res = await request(app)
       .delete(`/schedules/${scheduleId}`)
       .set('Authorization', `${token}`)
