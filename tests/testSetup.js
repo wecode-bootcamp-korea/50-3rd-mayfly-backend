@@ -7,7 +7,7 @@ async function setupDatabase(appDataSource) {
       (3, '박지민', 'jimin.park@example.com', '010-3456-7890', 500, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
       (4, '최서아', 'seoah.choi@example.com', '010-4567-8901', 2000, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
       (5, '정다빈', 'dabin.jung@example.com', '010-5678-9012', 750, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-      (10, '김문영', 'mn52il@naver.com', '010-1111-9999', 43700, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+      (10, '김문영', 'mn52il@naver.com', '010-1234-1122', 43700, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
     `)
     
   await appDataSource.query(`
@@ -18,7 +18,7 @@ async function setupDatabase(appDataSource) {
       (3, '박현우', 'hyunwoo.park@example.com', '010-3456-4567', 1000, '345-678-901'),
       (4, '이서연', 'seoyeon.lee@example.com', '010-5678-6789', 750, '456-789-012'),
       (5, '정태준', 'taejun.jung@example.com', '010-7890-8901', 1200, '567-890-123'),
-      (34, '최민지', 'alswl8184@naver.com', '010-5704-8484', 0, '123-456-789');
+      (34, '최민지', 'alswl8184@naver.com', '010-1111-9999', 0, '123-456-789');
   `);
 
   await appDataSource.query(`
