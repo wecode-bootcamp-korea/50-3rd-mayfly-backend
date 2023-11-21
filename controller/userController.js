@@ -17,8 +17,8 @@ const userSignup = async (req, res) => {
 //유저 정보 조회
 const getUserByInfo = async(req, res) => {
     try{
-        const userGetInfo = req.users;
-        const userGetInfoList = await userServices.getUserByInfo(userGetInfo);
+        const userId = req.users.id;
+        const userGetInfoList = await userServices.getUserByInfo(userId);
         return res.status(200).json({userGetInfoList: userGetInfoList})
     }catch(err){
         return res.status(500).json({ message: "SERVER ERROR" });
@@ -27,9 +27,9 @@ const getUserByInfo = async(req, res) => {
 // 유저 정보 수정
 const updateUser = async(req, res) => {
     try{
-        const userUpdateToken = req.users;
+        const userId = req.users.id;
         const userUpdateInfo  = req.body;
-        const userUpdateList = await userServices.updateUser(userUpdateToken, userUpdateInfo);
+        const userUpdateList = await userServices.updateUser(userId, userUpdateInfo);
         return res.status(200).json({userUpdateList: userUpdateList})
     }catch(err){
         return res.status(500).json({ message: "SERVER ERROR" });
@@ -38,8 +38,8 @@ const updateUser = async(req, res) => {
 //유저 정보 삭제
 const deleteUserByInfo = async(req, res) => {
     try{
-        const userDeleteInfo = req.users;
-        const userDeleteInfoList = await userServices.deleteUserByInfo(userDeleteInfo);
+        const userId = req.users.id;
+        const userDeleteInfoList = await userServices.deleteUserByInfo(userId);
         return res.status(200).json({userDeleteInfoList: userDeleteInfoList})
     }catch(err){
         return res.status(500).json({ message: "SERVER ERROR" });
@@ -48,8 +48,8 @@ const deleteUserByInfo = async(req, res) => {
 //유저 크레딧 조회
 const getUserByCredit = async(req, res) => {
     try{
-        const userCreditInfo = req.users;
-        const userCreditList = await userServices.getUserByCredit(userCreditInfo);
+        const userId = req.users.id;
+        const userCreditList = await userServices.getUserByCredit(userId);
         return res.status(200).json({userCreditList: userCreditList})
     }catch(err){
         return res.status(500).json({ message: "SERVER ERROR" });

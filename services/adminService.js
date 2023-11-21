@@ -1,7 +1,7 @@
 const adminDao = require("../models/adminDao");
 const adminVerifyToken = require("../middleware/auth");
 const bcrypt = require("bcrypt");
-const {error} = require("../middleware/error");
+const { error } = require("../middleware/error");
 
 // 회원가입
 const adminSignup = async (admin_id, password) => {
@@ -157,12 +157,6 @@ const deleteHostByHostId = async (adminId,hostId) => {
         };
         //해당 등대유저 강의 삭제 (soft)
         await adminDao.deleteHostClassByHostId(hostId);
-        // //해당 등대유저 강의 장소 삭제(hard)
-        // await adminDao.deleteHostPlaceByHostId(hostId);
-        //해당 등대유저 강의 이미지 삭제(soft)
-        await adminDao.deleteHostClassImgByHostId(hostId);
-        //해당 등대유저 강의 좋아요 삭제(hard)
-        await adminDao.deleteHostClassLikeByHostId(hostId);
         //해당 등대유저 강퇴(soft)
         await adminDao.deleteHostInfoByHostId(hostId);
         return ({message: 'HOST_DELETED_SUCCESS'});

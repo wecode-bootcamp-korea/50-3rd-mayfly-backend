@@ -17,8 +17,8 @@ const hostSignup = async (req, res) => {
 //호스트 정보 조회
 const getHost = async(req, res) => {
     try{
-        const hostInfo = req.hosts;
-        const hostInfoList = await hostServices.getHost(hostInfo);
+        const hostId = req.hosts.id;
+        const hostInfoList = await hostServices.getHost(hostId);
         return res.status(200).json({hostInfoList: hostInfoList})
     }catch(err){
         return res.status(500).json({ message: "SERVER ERROR" });
@@ -27,9 +27,9 @@ const getHost = async(req, res) => {
 // 호스트 정보 수정
 const updateHost = async(req, res) => {
     try{
-        const hostUpdateToken = req.hosts;
+        const hostId = req.hosts.id;
         const hostUpdateInfo = req.body;
-        const hostUpdateList = await hostServices.updateHost(hostUpdateToken, hostUpdateInfo);
+        const hostUpdateList = await hostServices.updateHost(hostId, hostUpdateInfo);
         return res.status(200).json({hostUpdateList: hostUpdateList})
     }catch(err){
         return res.status(500).json({ message: "SERVER ERROR" });
@@ -38,9 +38,8 @@ const updateHost = async(req, res) => {
 //호스트 정보 삭제
 const deleteHost = async(req, res) => {
     try{
-        const hostDeleteInfo = req.hosts;
-        console.log(hostDeleteInfo);
-        const hostDeleteInfoList = await hostServices.deleteHost(hostDeleteInfo);
+        const hostId = req.hosts.id;
+        const hostDeleteInfoList = await hostServices.deleteHost(hostId);
         return res.status(200).json({hostDeleteInfoList: hostDeleteInfoList})
     }catch(err){
         return res.status(500).json({ message: "SERVER ERROR" });
@@ -49,8 +48,8 @@ const deleteHost = async(req, res) => {
 //호스트 크레딧 조회
 const getHostCredit = async(req, res) => {
     try{
-        const hostCreditInfo = req.hosts;
-        const hostCreditList = await hostServices.getHostCredit(hostCreditInfo);
+        const hostId = req.hosts.id;
+        const hostCreditList = await hostServices.getHostCredit(hostId);
         return res.status(200).json({hostCreditList: hostCreditList})
     }catch(err){
         return res.status(500).json({ message: "SERVER ERROR" });

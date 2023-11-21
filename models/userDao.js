@@ -1,7 +1,7 @@
 const database = require("./datasource")
 
 // 유저 정보 여부 확인
-const checkUser = async (email) => {
+const checkUser = async (userId) => {
         const result = await database.appDataSource.query(
             `
         SELECT 
@@ -11,8 +11,8 @@ const checkUser = async (email) => {
         phone_number,
         credit
         FROM users
-        WHERE email = ?
-        `, [email]
+        WHERE id = ?
+        `, [userId]
         );
         return result;
 }
@@ -53,7 +53,7 @@ const updateToken = async(accessToken,refreshToken,email) => {
     return updateByToken
 };
 // 유저 정보 수정
-const userUpdateByInfo = async (email, { name, phone_number }) => {
+const userUpdateByInfo = async (userId, { name, phone_number }) => {
     const userUpdateInfo = await database.appDataSource.query(
         `
         UPDATE users
@@ -61,8 +61,8 @@ const userUpdateByInfo = async (email, { name, phone_number }) => {
         name = ?,
         phone_number = ?,
         updated_at = NOW()
-        WHERE email = ?
-        `, [name, phone_number, email]
+        WHERE id = ?
+        `, [name, phone_number, userId]
     );
     return userUpdateInfo;
 };
@@ -93,8 +93,8 @@ const checkUserSchedulByUserId = async (userId) => {
     return await database.appDataSource.query(query, [userId]);
 }
 //유저 정보 삭제
-const userDeleteByInfo = async (email) => {
-    return await database.appDataSource.query(`UPDATE users SET deleted_at = NOW() WHERE email = ?`, [email]);
+const userDeleteByInfo = async (userId) => {
+    return await database.appDataSource.query(`UPDATE users SET deleted_at = NOW() WHERE id = ?`, [userId]);
 };
 module.exports = {
     checkUser, 

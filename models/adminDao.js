@@ -2,15 +2,26 @@ const database = require("./datasource")
 
 // 관리자 존재 여부 확인
 const checkAdmin = async (adminId) => {
-    return await database.appDataSource.query(`SELECT * FROM admins WHERE admin_id = ?`, [adminId])
+    return await database.appDataSource.query(`
+        SELECT * FROM 
+            admins 
+        WHERE 
+            admin_id = ?`, [adminId])
 };
 // 회원가입
 const adminSignup = async (admin_id, password) => {
-    return await database.appDataSource.query(`INSERT INTO admins (admin_id, password) VALUES(? ,?)`, [admin_id, password])
+    return await database.appDataSource.query(`
+        INSERT INTO 
+            admins (admin_id, password) 
+        VALUES (? ,?)`, [admin_id, password])
 };
 // 로그인
 const adminLogin = async (admin_id) => {
-    return await database.appDataSource.query(`SELECT * FROM admins WHERE admin_id = ?;`, [admin_id])
+    return await database.appDataSource.query(`
+        SELECT * FROM 
+            admins 
+        WHERE 
+            admin_id = ?;`, [admin_id])
 };
 //모든 유저 리스트 전달 관리자니까 다 주는게 맞을듯
 const getUsersList = async () => {
@@ -18,25 +29,33 @@ const getUsersList = async () => {
 };
 //해당 유저 크레딧 있는지 조회
 const checkUserCreditByUserId = async (userId) => {
-    return await database.appDataSource.query(`SELECT credit FROM users WHERE id = ? AND credit > 0`, [userId])
+    return await database.appDataSource.query(`
+        SELECT 
+            credit 
+        FROM 
+            users 
+        WHERE 
+            id = ? 
+        AND 
+            credit > 0`, [userId])
 };
 //해당 유저 스케줄 있는지 조회
 const checkUserScheduleByUserId = async (userId) => {
     const query = `
-    SELECT
-        users.id,
-        users.name,
-        schedules.class_day,
-        schedules.class_hour,
-        schedules.status,
-        schedules.id AS schedule_id
-    FROM users
-    JOIN orders ON users.id = orders.user_id
-    JOIN classes ON orders.class_id = classes.id
-    INNER JOIN schedules ON classes.id = schedules.class_id
-    WHERE users.id = ?
-    AND schedules.status = 1
-    GROUP BY schedules.id `;
+        SELECT
+            users.id,
+            users.name,
+            schedules.class_day,
+            schedules.class_hour,
+            schedules.status,
+            schedules.id AS schedule_id
+        FROM users
+        JOIN orders ON users.id = orders.user_id
+        JOIN classes ON orders.class_id = classes.id
+        INNER JOIN schedules ON classes.id = schedules.class_id
+        WHERE users.id = ?
+        ND schedules.status = 1
+        GROUP BY schedules.id `;
     return await database.appDataSource.query(query, [userId]);
 };
 //해당 유저 강퇴 (soft)
@@ -75,27 +94,33 @@ const checkHostScheduleByHostId = async (hostId) => {
 };
 //해당 등대유저 강의 삭제(soft)
 const deleteHostClassByHostId = async (hostId) => {
-    return await database.appDataSource.query(`UPDATE classes SET deleted_at = NOW() WHERE host_id = ?`, [hostId])
-};
-// //해당 등대유저 강의 장소 삭제(hard)
-// const deleteHostPlaceByHostId = async (hostId) => {
-//     return await database.appDataSource.query(`DELETE FROM places WHERE id IN (SELECT place_id FROM classes WHERE host_id = ?)`, [hostId])
-// };
-//해당 등대유저 강의 이미지 삭제(soft)
-const deleteHostClassImgByHostId = async (hostId) => {
-    return await database.appDataSource.query(`UPDATE images SET deleted_at = NOW() WHERE class_id IN (SELECT id FROM classes WHERE host_id = ?)`, [hostId])
-};
-//해당 등대유저 강의 좋아요 삭제(hard)
-const deleteHostClassLikeByHostId = async (hostId) => {
-    return await database.appDataSource.query(`DELETE FROM likes WHERE class_id IN (SELECT id FROM classes WHERE host_id = ?)`, [hostId])
+    return await database.appDataSource.query(`
+        UPDATE 
+            classes 
+        SET 
+            deleted_at = NOW() 
+        WHERE 
+            host_id = ?`, [hostId])
 };
 //해당 등대유저 강퇴(soft)
 const deleteHostInfoByHostId = async (hostId) => {
-    return await database.appDataSource.query(`UPDATE hosts SET deleted_at = NOW() WHERE id = ?`, [hostId])
+    return await database.appDataSource.query(`
+        UPDATE 
+            hosts 
+        SET 
+            deleted_at = NOW() 
+        WHERE 
+            id = ?`, [hostId])
 };
 //해당 등대유저 복원
 const restoreHostId = async (hostId) => {
-    return await database.appDataSource.query(`UPDATE hosts SET deleted_at = null WHERE id = ?`, [hostId])
+    return await database.appDataSource.query(`
+        UPDATE 
+            hosts 
+        SET 
+            deleted_at = null 
+        WHERE 
+            id = ?`, [hostId])
 }
 
 module.exports = {
@@ -112,9 +137,6 @@ module.exports = {
     checkHostCreditByHostId,
     checkHostScheduleByHostId,
     deleteHostClassByHostId,
-    // deleteHostPlaceByHostId,
-    deleteHostClassImgByHostId,
-    deleteHostClassLikeByHostId,
     deleteHostInfoByHostId,
     restoreHostId
 };
