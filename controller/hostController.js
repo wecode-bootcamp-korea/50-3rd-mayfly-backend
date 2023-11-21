@@ -18,18 +18,20 @@ const hostSignup = async (req, res) => {
 const getHost = async(req, res) => {
     try{
         const hostId = req.hosts.id;
-        const hostInfoList = await hostServices.getHost(hostId);
+        const hostEmail = req.hosts.email;
+        const hostInfoList = await hostServices.getHost(hostId, hostEmail);
         return res.status(200).json({hostInfoList: hostInfoList})
     }catch(err){
         return res.status(500).json({ message: "SERVER ERROR" });
-    }
+    };
 };
 // 호스트 정보 수정
 const updateHost = async(req, res) => {
     try{
         const hostId = req.hosts.id;
+        const hostEmail = req.hosts.email;
         const hostUpdateInfo = req.body;
-        const hostUpdateList = await hostServices.updateHost(hostId, hostUpdateInfo);
+        const hostUpdateList = await hostServices.updateHost(hostId, hostEmail, hostUpdateInfo);
         return res.status(200).json({hostUpdateList: hostUpdateList})
     }catch(err){
         return res.status(500).json({ message: "SERVER ERROR" });
@@ -39,7 +41,8 @@ const updateHost = async(req, res) => {
 const deleteHost = async(req, res) => {
     try{
         const hostId = req.hosts.id;
-        const hostDeleteInfoList = await hostServices.deleteHost(hostId);
+        const hostEmail = req.hosts.email;
+        const hostDeleteInfoList = await hostServices.deleteHost(hostId, hostEmail);
         return res.status(200).json({hostDeleteInfoList: hostDeleteInfoList})
     }catch(err){
         return res.status(500).json({ message: "SERVER ERROR" });
@@ -49,11 +52,12 @@ const deleteHost = async(req, res) => {
 const getHostCredit = async(req, res) => {
     try{
         const hostId = req.hosts.id;
-        const hostCreditList = await hostServices.getHostCredit(hostId);
+        const hostEmail = req.hosts.email;
+        const hostCreditList = await hostServices.getHostCredit(hostId, hostEmail);
         return res.status(200).json({hostCreditList: hostCreditList})
     }catch(err){
         return res.status(500).json({ message: "SERVER ERROR" });
-    }
+    };
 };
 
 module.exports = {

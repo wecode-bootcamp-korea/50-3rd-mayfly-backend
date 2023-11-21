@@ -50,7 +50,7 @@ const hostSignup = async (code) => {
         const hostData = await hostDao.checkHost(email);
         if (hostData.length === 0) {
             // 가입되지 않은 경우 회원가입
-            const hostDataAdd = await hostDao.hostSignup(name, email, changeFirstNumber);
+            await hostDao.hostSignup(name, email, changeFirstNumber);
             // console.log("hostDataAdd :", hostDataAdd)
             const newHostData = await hostDao.checkHost(email);
             // console.log("newHostData", newHostData);
@@ -69,10 +69,10 @@ const hostSignup = async (code) => {
     }
 };
 //호스트 정보 조회
-const getHost = async (hostId) => {
+const getHost = async (hostId, hostEmail) => {
     try {
         // 호스트 확인 및 정보 조회
-        const hostInfoList = await hostDao.checkHost(hostId);
+        const hostInfoList = await hostDao.checkHost(hostEmail);
         // 호스트가 존재하지 않는 경우 처리
         if (!hostInfoList || hostInfoList.length === 0) {
             error(400, 'Host does not exist');
@@ -87,10 +87,10 @@ const getHost = async (hostId) => {
     }
 };
 //호스트 정보 수정
-const updateHost = async (hostId, hostUpdateInfo) => {
+const updateHost = async (hostId, hostEmail, hostUpdateInfo) => {
     try {
         // 호스트 확인 및 정보 조회
-        const hostUpdateInfoList = await hostDao.checkHost(hostId);
+        const hostUpdateInfoList = await hostDao.checkHost(hostEmail);
         // 호스트가 존재하지 않는 경우 처리
         if (!hostUpdateInfoList || hostUpdateInfoList.length === 0) {
             error(400, 'Host does not exist');
@@ -106,10 +106,10 @@ const updateHost = async (hostId, hostUpdateInfo) => {
     };
 };
 //호스트 정보 삭제
-const deleteHost = async (hostId) => {
+const deleteHost = async (hostId, hostEmail) => {
     try {
         // 호스트 확인
-        const hostDeleteInfoList = await hostDao.checkHost(hostId);
+        const hostDeleteInfoList = await hostDao.checkHost(hostEmail);
         // 호스트가 존재하지 않는 경우 처리
         if (!hostDeleteInfoList || hostDeleteInfoList.length === 0) {
             error(400, 'Host does not exist');
@@ -133,10 +133,10 @@ const deleteHost = async (hostId) => {
     }
 };
 //호스트 크레딧 조회
-const getHostCredit = async (hostId) => {
+const getHostCredit = async (hostId, hostEmail) => {
     try {
         // 호스트 확인 및 크레딧 조회
-        const hostCreditList = await hostDao.checkHost(hostId);
+        const hostCreditList = await hostDao.checkHost(hostEmail);
         // 호스트가 존재하지 않는 경우 처리
         if (!hostCreditList || hostCreditList.length === 0) {
             error(400, 'Host does not exist');

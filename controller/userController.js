@@ -18,7 +18,8 @@ const userSignup = async (req, res) => {
 const getUserByInfo = async(req, res) => {
     try{
         const userId = req.users.id;
-        const userGetInfoList = await userServices.getUserByInfo(userId);
+        const userEmail = req.users.email;
+        const userGetInfoList = await userServices.getUserByInfo(userId, userEmail);
         return res.status(200).json({userGetInfoList: userGetInfoList})
     }catch(err){
         return res.status(500).json({ message: "SERVER ERROR" });
@@ -28,8 +29,9 @@ const getUserByInfo = async(req, res) => {
 const updateUser = async(req, res) => {
     try{
         const userId = req.users.id;
+        const userEmail = req.users.email;
         const userUpdateInfo  = req.body;
-        const userUpdateList = await userServices.updateUser(userId, userUpdateInfo);
+        const userUpdateList = await userServices.updateUser(userId, userEmail, userUpdateInfo);
         return res.status(200).json({userUpdateList: userUpdateList})
     }catch(err){
         return res.status(500).json({ message: "SERVER ERROR" });
@@ -39,7 +41,8 @@ const updateUser = async(req, res) => {
 const deleteUserByInfo = async(req, res) => {
     try{
         const userId = req.users.id;
-        const userDeleteInfoList = await userServices.deleteUserByInfo(userId);
+        const userEmail = req.users.email;
+        const userDeleteInfoList = await userServices.deleteUserByInfo(userId, userEmail);
         return res.status(200).json({userDeleteInfoList: userDeleteInfoList})
     }catch(err){
         return res.status(500).json({ message: "SERVER ERROR" });

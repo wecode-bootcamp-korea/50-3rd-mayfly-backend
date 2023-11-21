@@ -1,7 +1,7 @@
 const database = require("./datasource")
 
 // 유저 정보 여부 확인
-const checkUser = async (userId) => {
+const checkUser = async (email) => {
         const result = await database.appDataSource.query(
             `
         SELECT 
@@ -11,8 +11,8 @@ const checkUser = async (userId) => {
         phone_number,
         credit
         FROM users
-        WHERE id = ?
-        `, [userId]
+        WHERE email = ?
+        `, [email]
         );
         return result;
 }

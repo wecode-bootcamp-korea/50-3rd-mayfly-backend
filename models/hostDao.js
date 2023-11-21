@@ -1,7 +1,7 @@
 const database = require("./datasource")
 
 // 요청 이메일 존재 여부 확인
-const checkHost = async (hostId) => {
+const checkHost = async (email) => {
     const result = await database.appDataSource.query(`
         SELECT 
             id,
@@ -13,8 +13,8 @@ const checkHost = async (hostId) => {
         FROM 
             hosts
         WHERE 
-            id = ?
-        `, [hostId]);
+            email = ?
+        `, [email]);
     return result;
 };
 // 회원가입

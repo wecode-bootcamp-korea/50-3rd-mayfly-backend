@@ -56,7 +56,7 @@ const userSignup = async (code) => {
         const userData = await userDao.checkUser(email);
         if (userData.length === 0) {
             // 가입되지 않은 경우 회원가입
-            const userDataAdd = await userDao.userSignup(name, email, changeFirstNumber,accessToken,refreshToken);
+            await userDao.userSignup(name, email, changeFirstNumber,accessToken,refreshToken);
             const newUserData = await userDao.checkUser(email);
             const tokenIssuance = newUserData[0].id;
             const jwtToken = await userVerifyToken.userCreateToken(tokenIssuance, name, email, changeFirstNumber);
@@ -73,10 +73,10 @@ const userSignup = async (code) => {
     }
 };
 //유저 정보 조회
-const getUserByInfo = async (userId) => {
+const getUserByInfo = async (userId, userEmail) => {
     try {
         // 유저 확인
-        const userGetInfoList = await userDao.checkUser(userId);
+        const userGetInfoList = await userDao.checkUser(userEmail);
         // 유저가 존재하지 않는 경우 처리
         if (!userGetInfoList || userGetInfoList.length === 0) {
             error(400,'User does not exist');
@@ -91,10 +91,10 @@ const getUserByInfo = async (userId) => {
     }
 };
 //유저 정보 수정
-const updateUser = async(userId, userUpdateInfo) => {
+const updateUser = async(userId, userEmail, userUpdateInfo) => {
     try{
         // 유저 확인 및 정보 조회
-        const userUpdateByCheck = await userDao.checkUser(userId);
+        const userUpdateByCheck = await userDao.checkUser(userEmail);
         // 유저가 존재하지 않는 경우 처리
         if(!userUpdateByCheck || userUpdateByCheck.length === 0) {
             error(400,'User does not exist');
@@ -110,10 +110,10 @@ const updateUser = async(userId, userUpdateInfo) => {
     }
 };
 //유저 정보 삭제
-const deleteUserByInfo = async (userId) => {
+const deleteUserByInfo = async (userId, userEmail) => {
     try {
         // 유저 확인
-        const userDeleteInfoList = await userDao.checkUser(userId);
+        const userDeleteInfoList = await userDao.checkUser(userEmail);
         // 유저가 존재하지 않는 경우 처리
         if (!userDeleteInfoList || userDeleteInfoList.length === 0) {
             error(400,'User does not exist'); 
