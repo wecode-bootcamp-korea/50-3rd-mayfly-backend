@@ -14,8 +14,7 @@ const phoneNumberConversion = (phoneNumber) => {
         extrackPhoneNumber : `010${extrackPhoneNumber}`)
         .replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
     return addSymbol;
-}
-
+};
 // 회원가입 및 로그인
 const hostSignup = async (code) => {
     try {
@@ -53,9 +52,9 @@ const hostSignup = async (code) => {
             // 가입되지 않은 경우 회원가입
             const hostDataAdd = await hostDao.hostSignup(name, email, changeFirstNumber);
             // console.log("hostDataAdd :", hostDataAdd)
-            // const newHostData = await hostDao.checkHost(email);
+            const newHostData = await hostDao.checkHost(email);
             // console.log("newHostData", newHostData);
-            const tokenIssuance = hostDataAdd[0].id;
+            const tokenIssuance = newHostData[0].id;
             const jwtToken = await hostVerifyToken.hostCreateToken(tokenIssuance, name, email, changeFirstNumber);
             return jwtToken;
         }
@@ -69,7 +68,6 @@ const hostSignup = async (code) => {
         throw err;
     }
 };
-
 //호스트 정보 조회
 const getHost = async (hostInfo) => {
     try {
@@ -90,7 +88,6 @@ const getHost = async (hostInfo) => {
         throw err;
     }
 };
-
 //호스트 정보 수정
 const updateHost = async(hostUpdateToken, hostUpdateInfo) => {
     try{
@@ -110,39 +107,65 @@ const updateHost = async(hostUpdateToken, hostUpdateInfo) => {
     }catch (err) {
         console.error("Error in updateHost:", err);
         throw err;
-    }
+    };
 };
-
 //호스트 정보 삭제
 const deleteHost = async (hostDeleteInfo) => {
     try {
         const deleteHostId = hostDeleteInfo.id;
         const deleteHostEmail = hostDeleteInfo.email;
-        // 호스트 확인 및 정보 삭제
+        console.log(deleteHostEmail)
+        // 호스트 확인
         const hostDeleteInfoList = await hostDao.checkHost(deleteHostEmail);
         // 호스트가 존재하지 않는 경우 처리
         if (!hostDeleteInfoList || hostDeleteInfoList.length === 0) {
             error(400,'Host does not exist'); 
         }else if(hostDeleteInfoList[0].id !== deleteHostId){
             error(400,'Invalid host ID');
-        }
-        // 호스트 정보 삭제
-        const deleteByHost = await hostDao.deleteRealHost(deleteHostId, deleteHostEmail);
-        return deleteByHost;
+        };
+        // 호스트 크레딧 확인
+        if (hostDeleteInfoList[0].credit > 0) {
+            error(400, 'USER_CREDIT_ISSUE');
+        };
+        console.log(hostDeleteInfoList[0].credit);
+        // 호스트 강의 스케줄 확인
+        const checkHostSchedulByHostEmail = await hostDao.checkHostSchedulByHostId(deleteHostId);
+        if(checkHostSchedulByHostEmail.length > 0){
+            error(400,'USER_SCHEDULE_ISSUE')
+        };
+        console.log(checkHostSchedulByHostEmail.length);
+        // 호스트 강의 삭제
+        const test1 = await hostDao.deleteHostClassByHostEmail(deleteHostEmail);
+        console.log(test1);
+        // // 호스트 강의 장소 삭제 1(hard)
+        // const test2 = await hostDao.updateClassesPlaceIdByHostEmai(deleteHostEmail);
+        // console.log(test2);
+        // // 호스트 강의 장소 삭제 2(hard)
+        // const test3 = await hostDao.deletePlaceByHostEmail(deleteHostEmail);
+        // console.log(test3);
+        // 호스트 강의 이미지 삭제(soft)
+        const test4 = await hostDao.deleteHostClassImgByHostEmail(deleteHostEmail);
+        const test44 = await hostDao.deleteHostClassImgByHostEmail(deleteHostEmail);
+        console.log(test4, test44);
+        // 호스트 강의 좋아요 삭제(hard)
+        const test5 = await hostDao.deleteHostClassLikeByHostEmail(deleteHostEmail);
+        console.log(test5);
+        // 호스트 정보 탈퇴 (soft)
+        const test6 = await hostDao.deleteRealHost(deleteHostEmail);
+        console.log(test6)
+        return ({message: 'USER_DELETED_SUCCESS'});
     } catch (err) {
         console.error("Error in deleteHost:", err);
         throw err;
     }
 };
-
-
 //호스트 크레딧 조회
 const getHostCredit = async (hostCreditInfo) => {
     try {
         const getHostCreditId = hostCreditInfo.id;
         const getHostCreditEmail = hostCreditInfo.email;
         // 호스트 확인 및 크레딧 조회
-        const hostCreditList = await hostDao.checkHost(getHostCreditId, getHostCreditEmail);
+        const hostCreditList = await hostDao.checkHost(getHostCreditEmail);
         // 호스트가 존재하지 않는 경우 처리
         if (!hostCreditList || hostCreditList.length === 0) {
             error(400,'Host does not exist');
@@ -156,8 +179,6 @@ const getHostCredit = async (hostCreditInfo) => {
         throw err;
     }
 };
-
-
 
 module.exports = {
     hostSignup, getHost, updateHost, deleteHost, getHostCredit

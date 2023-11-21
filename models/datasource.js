@@ -1,4 +1,4 @@
-const {DataSource} = require('typeorm');
+const { DataSource } = require('typeorm');
 
 const dotenv = require("dotenv")
 

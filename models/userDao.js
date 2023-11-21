@@ -1,9 +1,7 @@
 const database = require("./datasource")
 
-
-// 요청 이메일 존재 여부 확인
+// 유저 정보 여부 확인
 const checkUser = async (email) => {
-    
         const result = await database.appDataSource.query(
             `
         SELECT 
@@ -18,19 +16,16 @@ const checkUser = async (email) => {
         );
         return result;
 }
-
-
 // 회원가입
-const userSignup = async (name, email, phone_number) => {
+const userSignup = async (name, email, phone_number,accessToken,refreshToken) => {
         const result = await database.appDataSource.query(
             `
-            INSERT INTO users (name, email, phone_number, credit, created_at) 
-            VALUES (?, ?, ?, ?, NOW());
-            `, [name, email, phone_number, 0]
+            INSERT INTO users (name, email, phone_number, credit, created_at, access_token, refresh_token) 
+            VALUES (?, ?, ?, ?, NOW(), ?, ?);
+            `, [name, email, phone_number, 0, accessToken, refreshToken]
         )
         return result;
-}
-
+};
 //로그인
 const userLogin = async (email) => {
     const result = await database.appDataSource.query(
@@ -46,7 +41,17 @@ const userLogin = async (email) => {
     )
     return result;
 };
-
+//카카오 토큰 업데이트
+const updateToken = async(accessToken,refreshToken,email) => {
+    const updateByToken = database.appDataSource.query(`
+        UPDATE users
+        SET
+        access_token = ?,
+        refresh_token = ?
+        WHERE email = ?
+    `,[accessToken,refreshToken,email]);
+    return updateByToken
+};
 // 유저 정보 수정
 const userUpdateByInfo = async (email, { name, phone_number }) => {
     const userUpdateInfo = await database.appDataSource.query(
@@ -56,63 +61,48 @@ const userUpdateByInfo = async (email, { name, phone_number }) => {
         name = ?,
         phone_number = ?,
         updated_at = NOW()
-        WHERE email = ? 
+        WHERE email = ?
         `, [name, phone_number, email]
     );
     return userUpdateInfo;
 };
-
-
-
-// //유저 정보 조회
-// const getRealUser = async (id,email) => {
-//     const realUserCheck = await database.appDataSource.query(
-//         `
-//         SELECT
-//         id,
-//         name,
-//         email,
-//         phone_number
-//         FROM users
-//         WHERE id = ?
-//         AND email =?
-//         `, [id, email]
-//         )
-//         return realUserCheck;
-// };
-
-//유저 정보 삭제
-const deleteRealUser = async (email) => {
-    const realUserDelete = await database.appDataSource.query(
-        `
-        UPDATE
+// 유저 강의 예약 내역 확인
+const checkUserSchedulByUserId = async (userId) => {
+    const query = `
+    SELECT
+        classes.id,
+        classes.title,
+        schedules.class_day,
+        schedules.class_hour
+    FROM
         users
-        SET
-        deleted_at = NOW()
-        WHERE email = ?
-        `, [email])
-        return realUserDelete;
+    JOIN
+        orders ON users.id = orders.user_id
+    JOIN
+        classes ON orders.class_id = classes.id
+    JOIN
+        schedules ON classes.id = schedules.class_id
+    JOIN
+        places ON classes.place_id = places.id
+    WHERE
+        users.id = ?
+    AND schedules.status = 1
+    GROUP BY
+        schedules.id;
+    `;
+    return await database.appDataSource.query(query, [userId]);
+}
+//유저 정보 삭제
+const userDeleteByInfo = async (email) => {
+    return await database.appDataSource.query(`UPDATE users SET deleted_at = NOW() WHERE email = ?`, [email]);
 };
-
-//유저 크레딧 조회
-// const getRealUserCredit = async (id,email) => {
-//     const realUserCreditCheck = await database.appDataSource.query(
-//         `
-//         SELECT
-//         id,
-//         name,
-//         email,
-//         credit
-//         FROM users
-//         WHERE id = ?
-//         AND email =?
-//         `, [id, email]
-//         )
-//         return realUserCreditCheck;
-// };
-
-
 module.exports = {
-    checkUser, userSignup, userLogin, userUpdateByInfo, deleteRealUser
+    checkUser, 
+    userSignup, 
+    userLogin, 
+    userUpdateByInfo, 
+    checkUserSchedulByUserId,
+    userDeleteByInfo, 
+    updateToken
 }
 

@@ -26,12 +26,13 @@ const adminVerifyToken = async (req, res, next) => {
             const decoded = await adminTokenDecode(jwtToken, secretkey);
             if (decoded.role === 'admin') {
                 req.admin = decoded;
+                console.log("asv", decoded)
                 next();
             } else {
                 throw new Error('Invalid role');
             }
         } catch (err) {
-            return res.status(403).json({ message: err.message });
+            return res.status(403).json({ message: "권한이 없습니다." });
         }
     }
 };
@@ -56,14 +57,14 @@ const userVerifyToken = async (req, res, next) => {
     } else {
         try {
             const decoded = await userTokenDecode(jwtToken, secretkey);
-            if(decoded.role === 'users'){
+            if (decoded.role === 'users') {
                 req.users = decoded;
                 next();
             } else {
                 throw new Error('Invalid role');
             }
         } catch (err) {
-            return res.status(403).json({ message: err.message })
+            return res.status(403).json({ message: '권한이 없습니다.' })
         }
     }
 };
@@ -90,14 +91,14 @@ const hostVerifyToken = async (req, res, next) => {
     } else {
         try {
             const decoded = await hostTokenDecode(jwtToken, secretkey);
-            if(decoded.role === 'hosts'){
+            if (decoded.role === 'hosts') {
                 req.hosts = decoded;
                 next();
             } else {
                 throw new Error('Invalid role');
             }
         } catch (err) {
-            return res.status(403).json({ message: err.message })
+            return res.status(403).json({ message: "권한이 없습니다." })
         }
     }
 };
@@ -108,11 +109,40 @@ const hostCreateToken = async (id, name, email, phone_number) => {
     return token.sign(payload, secretkey, options)
 };
 
+const tokenDecode = async (jwtToken, secretkey) => {
+    return token.verify(jwtToken, secretkey);
+};
+const verifyToken = async (req, res, next) => {
+    const jwtToken = req.headers.authorization;
+
+    if (!jwtToken) {
+        res.status(403).json({ message: '권한이 없습니다.' });
+    } else {
+        try {
+            const decoded = await tokenDecode(jwtToken, secretkey);
+
+            // 사용자의 역할에 따라 적절한 처리 수행
+            if (decoded.role === 'users') {
+                req.users = decoded;
+                console.log(req.user)
+                next();
+            } else if (decoded.role === 'hosts') {
+                req.hosts = decoded;
+                next();
+            } else {
+                throw new Error('Invalid role');
+            }
+        } catch (err) {
+            return res.status(403).json({ message: '토큰 검증 실패' });
+        }
+    }
+};
+
 
 
 
 
 module.exports = {
     adminVerifyToken, adminTokenDecode, adminCreateToken, userVerifyToken, userTokenDecode, userCreateToken,
-    hostVerifyToken, hostTokenDecode, hostCreateToken, makehash, decode
+    hostVerifyToken, hostTokenDecode, hostCreateToken, makehash, decode, verifyToken, tokenDecode
 }

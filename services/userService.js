@@ -14,8 +14,7 @@ const phoneNumberConversion = (phoneNumber) => {
     extrackPhoneNumber : `010${extrackPhoneNumber}`)
     .replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
     return addSymbol;
-}
-
+};
 // 회원가입 
 const userSignup = async (code) => {
     try {
@@ -30,7 +29,10 @@ const userSignup = async (code) => {
                     redirect_uri: process.env.KAKAO_USER_URL
                 }
             });
+            const refreshToken = authToken.data.refresh_token;
             const accessToken = authToken.data.access_token;
+            console.log("refreshToken", refreshToken);
+            console.log("accessToken", accessToken);
         // 카카오 API를 통해 사용자 정보 가져오기
         const response = await axios.get('https://kapi.kakao.com/v2/user/me', {
             headers: {
@@ -42,7 +44,7 @@ const userSignup = async (code) => {
         if (!response || response.status !== 200) {
             error(400, '카카오 연결 안됨');
         }
-
+    
         const { name, email, phone_number } = response.data.kakao_account;
 
         //전화번호 010으로 변환
@@ -52,15 +54,19 @@ const userSignup = async (code) => {
         const userData = await userDao.checkUser(email);
         if (userData.length === 0) {
             // 가입되지 않은 경우 회원가입
-            const userDataAdd = await userDao.userSignup(name, email, changeFirstNumber);
+            const userDataAdd = await userDao.userSignup(name, email, changeFirstNumber,accessToken,refreshToken);
             // console.log("userDataAdd :", userDataAdd)
-            // const newUserData = await userDao.checkUser(email);
-            // console.log("newUserData", newUserData);
-            const tokenIssuance = userDataAdd[0].id;
+            const newUserData = await userDao.checkUser(email);
+            //console.log("newUserData", newUserData);
+            //console.log("이거뭐라떠",userDataAdd)
+            // console.log(userDataAdd[0].id);
+            const tokenIssuance = newUserData[0].id;
+            //console.log(tokenIssuance)
             const jwtToken = await userVerifyToken.userCreateToken(tokenIssuance, name, email, changeFirstNumber);
             return jwtToken;
         };
         // 이미 가입된 사용자인 경우 로그인 처리
+        await userDao.updateToken(accessToken,refreshToken,email);
         const tokenIssuance = userData[0].id;
         const jwtToken = await userVerifyToken.userCreateToken(tokenIssuance, name, email, userData[0].phone_number);
         return jwtToken;
@@ -69,7 +75,6 @@ const userSignup = async (code) => {
         throw err;
     }
 };
-
 //유저 정보 조회
 const getUserByInfo = async (userGetInfo) => {
     try {
@@ -90,7 +95,6 @@ const getUserByInfo = async (userGetInfo) => {
         throw err;
     }
 };
-
 //유저 정보 수정
 const updateUser = async(userUpdateToken, userUpdateInfo) => {
     try{
@@ -112,31 +116,36 @@ const updateUser = async(userUpdateToken, userUpdateInfo) => {
         throw err;
     }
 };
-
-
 //유저 정보 삭제
 const deleteUserByInfo = async (userDeleteInfo) => {
     try {
         const deleteUserId = userDeleteInfo.id;
         const deleteUserEmail = userDeleteInfo.email;
-        // 유저 확인 및 삭제
+        // 유저 확인
         const userDeleteInfoList = await userDao.checkUser(deleteUserEmail);
         // 유저가 존재하지 않는 경우 처리
         if (!userDeleteInfoList || userDeleteInfoList.length === 0) {
             error(400,'User does not exist'); 
         }else if(userDeleteInfoList[0].id !== deleteUserId){
             error(400,'Invalid user ID');
-        }
+        };
+        // 유저 크레딧 확인
+        if(userDeleteInfoList[0].credit> 0){
+            error(400,'USER_CREDIT_ISSUE')
+        };
+        // 유저 강의 신청 예약 확인
+        const checkUserSchedulByUserId = await userDao.checkUserSchedulByUserId(deleteUserId);
+        if(checkUserSchedulByUserId.length > 0){
+            error(400,'USER_SCHEDULE_ISSUE')
+        };
         // 유저 정보 삭제
-        const deleteByUser = await userDao.deleteRealUser(deleteUserId, deleteUserEmail);
-        return deleteByUser;
+        await userDao.userDeleteByInfo(deleteUserEmail);
+        return ({message: 'USER_DELETED_SUCCESS'});
     } catch (err) {
         console.error("Error in deleteUser:", err);
         throw err;
     };
 };
-
-
 //유저 크레딧 조회
 const getUserByCredit = async (userCreditInfo) => {
     try {
@@ -157,7 +166,6 @@ const getUserByCredit = async (userCreditInfo) => {
         throw err;
     }
 };
-
 
 module.exports = {
     userSignup, getUserByInfo, updateUser, deleteUserByInfo, getUserByCredit

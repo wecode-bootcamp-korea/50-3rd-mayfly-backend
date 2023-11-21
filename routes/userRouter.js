@@ -11,7 +11,7 @@ router.get("/", userVerifyToken.userVerifyToken, userController.getUserByInfo);
 //유저 정보 수정
 router.put("/update", userVerifyToken.userVerifyToken, userController.updateUser);
 //유저 정보 삭제
-router.put("/", userVerifyToken.userVerifyToken, userController.deleteUserByInfo);
+router.put("/delete", userVerifyToken.userVerifyToken, userController.deleteUserByInfo);
 //유저 크레딧 조회 수정 필요
 router.get("/credit", userVerifyToken.userVerifyToken, userController.getUserByCredit);
 

@@ -7,14 +7,18 @@ const adminVerifyToken = require("../middleware/auth");
 router.post("/signup", adminController.adminSignup);
 //로그인
 router.post("/login", adminController.adminLogin);
-//유저 정보 조회
-router.get("/users", adminVerifyToken.adminVerifyToken, adminController.adminGetUser);
-//호스트 정보 조회
-router.get("/hosts", adminVerifyToken.adminVerifyToken, adminController.adminGetHost);
-//유저 정보 삭제
-router.put("/users", adminVerifyToken.adminVerifyToken, adminController.adminDeleteUser);
-//호스트 정보 삭제
-router.put("/hosts", adminVerifyToken.adminVerifyToken, adminController.adminDeleteHost);
+//하루 모든하루리스트 가져다 주기
+router.get("/userlist", adminVerifyToken.adminVerifyToken, adminController.getUsersList);
+//하루 해당 유저 삭제시키기(soft)
+router.put("/users/:userId", adminVerifyToken.adminVerifyToken, adminController.deleteUserByUserId);
+//하루 해당 유저 삭제 복원시키기
+router.put("/users/update/:userId", adminVerifyToken.adminVerifyToken, adminController.restoreUserByUserId);
+//등대 모든 등대리스트 가져다 주기
+router.get("/hostlist", adminVerifyToken.adminVerifyToken, adminController.getHostsList);
+//등대 해당 유저 삭제시키기(soft)
+router.put("/hosts/:hostId", adminVerifyToken.adminVerifyToken, adminController.deleteHostByHostId);
+//등대 해당 유저 복원시키기
+router.put("/hosts/update/:hostId", adminVerifyToken.adminVerifyToken, adminController.restoreHostByHostId);
 
 module.exports = {
     router

@@ -11,7 +11,7 @@ router.get("/", hostVerifyToken.hostVerifyToken, hostController.getHost);
 //호스트 정보 수정
 router.put("/update", hostVerifyToken.hostVerifyToken, hostController.updateHost);
 //호스트 정보 삭제
-router.put("/", hostVerifyToken.hostVerifyToken, hostController.deleteHost);
+router.put("/delete", hostVerifyToken.hostVerifyToken, hostController.deleteHost);
 //호스트 크레딧 조회
 router.get("/credit", hostVerifyToken.hostVerifyToken, hostController.getHostCredit);
 
