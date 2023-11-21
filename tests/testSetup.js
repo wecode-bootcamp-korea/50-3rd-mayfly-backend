@@ -7,7 +7,7 @@ async function setupDatabase(appDataSource) {
       (3, '박지민', 'jimin.park@example.com', '010-3456-7890', 500, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
       (4, '최서아', 'seoah.choi@example.com', '010-4567-8901', 2000, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
       (5, '정다빈', 'dabin.jung@example.com', '010-5678-9012', 750, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-      (10, '김문영', 'mn52il@naver.com', '010-1234-1122', 43700, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+      (10, '김문영', 'mn52il@naver.com', '010-1111-9999', 43700, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
     `)
     
   await appDataSource.query(`
