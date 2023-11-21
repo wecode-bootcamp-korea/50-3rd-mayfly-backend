@@ -12,7 +12,8 @@ const createChatRoom = async(req,res) =>{
   }
 }
 const getChatRoom = async(req,res) => {
-  const id = req.params.id
+  const id = req.hosts.id
+  console.log(id)
   try{
     const room = await chatRoomService.getChatRoom(id)
     res.status(200).json({room})

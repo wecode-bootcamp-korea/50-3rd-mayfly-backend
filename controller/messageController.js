@@ -3,7 +3,7 @@ const  messageService  = require('../services/messageService');
 const createMessage = async (req, res) => {
   try {
     const {content} = req.body;
-    const chatId = req.params.id
+    const chatId = req.params.chatId
     let sender
     if(req.users){
       sender = req.users.name
@@ -11,8 +11,7 @@ const createMessage = async (req, res) => {
       sender = req.hosts.name
       console.log(sender)
     }
-    console.log('123123123123123123123123123',chatId)
-    console.log('222222222222',content)
+    console.log('222222222222',content,chatId)
     // io.sockets.emit("message",{
     //   content: message.content,
     //   name: message.name
