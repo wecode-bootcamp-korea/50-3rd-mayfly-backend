@@ -2,7 +2,8 @@ const  messageService  = require('../services/messageService');
 
 const createMessage = async (req, res) => {
   try {
-    const {content,chatId } = req.body;
+    const {content} = req.body;
+    const chatId = req.params.id
     let sender
     if(req.users){
       sender = req.users.name
@@ -10,6 +11,8 @@ const createMessage = async (req, res) => {
       sender = req.hosts.name
       console.log(sender)
     }
+    console.log('123123123123123123123123123',chatId)
+    console.log('222222222222',content)
     // io.sockets.emit("message",{
     //   content: message.content,
     //   name: message.name
@@ -24,13 +27,11 @@ const createMessage = async (req, res) => {
 
 const getAllMessages = async (req, res) => {
   const id = req.params.id
-  const {name,email,phone_number} = req.users
+  // const {name,email,phone_number} = req.users
   try {
-    if(name){
       const messages = await messageService.getAllMessages(id);
-      res.status(200).json(messages);
-
-    }
+      res.status(200).json({messages});
+    
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal Server Error' });

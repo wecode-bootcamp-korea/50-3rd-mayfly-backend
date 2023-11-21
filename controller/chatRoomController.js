@@ -12,10 +12,9 @@ const createChatRoom = async(req,res) =>{
   }
 }
 const getChatRoom = async(req,res) => {
-  const userId = req.body.userId
-  console.log(userId)
+  const id = req.params.id
   try{
-    const room = await chatRoomService.getChatRoom(userId)
+    const room = await chatRoomService.getChatRoom(id)
     res.status(200).json({room})
   }catch(err){
     res.status(500).json({message:"nope"})

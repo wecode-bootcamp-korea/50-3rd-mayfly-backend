@@ -4,8 +4,8 @@ const createChatRoom = async(userId,hostId) =>{
   const chatRoom = await chatRoomDao.createChatRoom(userId,hostId)
   return chatRoom
 }
-const getChatRoom = async(userId) =>{
-  const chatRoom = await chatRoomDao.getChatRoom(userId)
+const getChatRoom = async(id) =>{
+  const chatRoom = await chatRoomDao.getChatRoom(id)
   return chatRoom
 }
 

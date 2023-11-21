@@ -6,9 +6,9 @@ const createChatRoom = async(userId,hostId) =>{
   `)
 }
 
-const getChatRoom = async(userId)=>{
+const getChatRoom = async(id)=>{
   return appDataSource.query(`
-  SELECT * FROM chat WHERE user_id = '${userId}'
+  SELECT * FROM chat WHERE host_id = '${id}'
   `)
 }
 
