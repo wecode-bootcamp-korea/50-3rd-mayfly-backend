@@ -1,9 +1,9 @@
 const database = require("./datasource")
 
-// 유저 정보 여부 확인
+
 const checkUser = async (email) => {
-        const result = await database.appDataSource.query(
-            `
+    const result = await database.appDataSource.query(
+        `
         SELECT 
         id,
         name,
@@ -14,32 +14,31 @@ const checkUser = async (email) => {
         FROM users
         WHERE email = ?
         `, [email]
-        );
-        return result;
+    );
+    return result;
 }
-// 회원가입
-const userSignup = async (name, email, phone_number,accessToken,refreshToken) => {
-        const result = await database.appDataSource.query(
-            `
+
+const userSignup = async (name, email, phone_number, accessToken, refreshToken) => {
+    const result = await database.appDataSource.query(
+        `
             INSERT INTO users (name, email, phone_number, credit, created_at, access_token, refresh_token) 
             VALUES (?, ?, ?, ?, NOW(), ?, ?);
             `, [name, email, phone_number, 0, accessToken, refreshToken]
-        )
-        return result;
+    )
+    return result;
 };
 
-//카카오 토큰 업데이트
-const updateToken = async(accessToken,refreshToken,email) => {
+const updateToken = async (accessToken, refreshToken, email) => {
     const updateByToken = database.appDataSource.query(`
         UPDATE users
         SET
         access_token = ?,
         refresh_token = ?
         WHERE email = ?
-    `,[accessToken,refreshToken,email]);
+    `, [accessToken, refreshToken, email]);
     return updateByToken
 };
-// 유저 정보 수정
+
 const userUpdateByInfo = async (userId, { name, phone_number }) => {
     const userUpdateInfo = await database.appDataSource.query(
         `
@@ -53,7 +52,7 @@ const userUpdateByInfo = async (userId, { name, phone_number }) => {
     );
     return userUpdateInfo;
 };
-// 유저 강의 예약 내역 확인
+
 const checkUserSchedulByUserId = async (userId) => {
     const query = `
     SELECT
@@ -79,16 +78,16 @@ const checkUserSchedulByUserId = async (userId) => {
     `;
     return await database.appDataSource.query(query, [userId]);
 }
-//유저 정보 삭제
+
 const userDeleteByInfo = async (userId) => {
     return await database.appDataSource.query(`UPDATE users SET deleted_at = NOW() WHERE id = ?`, [userId]);
 };
 module.exports = {
-    checkUser, 
-    userSignup, 
-    userUpdateByInfo, 
+    checkUser,
+    userSignup,
+    userUpdateByInfo,
     checkUserSchedulByUserId,
-    userDeleteByInfo, 
+    userDeleteByInfo,
     updateToken
 }
 
