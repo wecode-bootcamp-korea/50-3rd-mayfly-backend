@@ -29,7 +29,6 @@ const userSignup = async (code) => {
                     redirect_uri: process.env.KAKAO_USER_URL
                 }
             });
-            console.log('테스트 코드용 authToken', authToken);
             const refreshToken = authToken.data.refresh_token;
             const accessToken = authToken.data.access_token;
 
@@ -40,12 +39,10 @@ const userSignup = async (code) => {
                 Authorization: `Bearer ${accessToken}`
             },
         });
-        console.log('테스트 코드용 response', response)
 
         if (!response || response.status !== 200) {
             error(400, '카카오 연결 안됨');
         }
-        console.log('테스트 코드용 response.data.kakao_account',response.data.kakao_account)
     
         const { name, email, phone_number } = response.data.kakao_account;
 
@@ -61,6 +58,10 @@ const userSignup = async (code) => {
             const tokenIssuance = newUserData[0].id;
             const jwtToken = await userVerifyToken.userCreateToken(tokenIssuance, name, email, changeFirstNumber);
             return jwtToken;
+        };
+        console.log(userData[0].deleted_at)
+        if(userData[0].deleted_at !== null){
+            return error(400, '탈퇴한 회원입니다');
         };
         // 이미 가입된 사용자인 경우 로그인 처리
         await userDao.updateToken(accessToken,refreshToken,email);

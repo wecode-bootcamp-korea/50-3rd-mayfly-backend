@@ -9,7 +9,8 @@ const checkHost = async (email) => {
             email,
             phone_number,
             credit,
-            bank_account
+            bank_account,
+            deleted_at
         FROM 
             hosts
         WHERE 
@@ -25,21 +26,6 @@ const hostSignup = async (name, email, phone_number) => {
         VALUES 
             (?, ?, ?, ?, NOW());
         `, [name, email, phone_number, 0]);
-    return result;
-};
-//로그인
-const hostLogin = async (email) => {
-    const result = await database.appDataSource.query(`
-        SELECT
-            id,
-            name,
-            email,
-            phone_number
-        FROM 
-            hosts
-        WHERE 
-            email = ?
-        `, [email]);
     return result;
 };
 // 호스트 정보 수정
@@ -78,7 +64,6 @@ const deleteRealHost = async (hostId) => {
 module.exports = {
     checkHost,
     hostSignup,
-    hostLogin,
     hostUpdateByInfo,
     checkHostClassByHostId,
     deleteRealHost

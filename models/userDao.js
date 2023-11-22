@@ -9,7 +9,8 @@ const checkUser = async (email) => {
         name,
         email,
         phone_number,
-        credit
+        credit,
+        deleted_at
         FROM users
         WHERE email = ?
         `, [email]
@@ -26,21 +27,7 @@ const userSignup = async (name, email, phone_number,accessToken,refreshToken) =>
         )
         return result;
 };
-//로그인
-const userLogin = async (email) => {
-    const result = await database.appDataSource.query(
-        `
-        SELECT
-        id,
-        name,
-        email,
-        phone_number
-        FROM users
-        WHERE email = ?
-        `, [email]
-    )
-    return result;
-};
+
 //카카오 토큰 업데이트
 const updateToken = async(accessToken,refreshToken,email) => {
     const updateByToken = database.appDataSource.query(`
@@ -99,7 +86,6 @@ const userDeleteByInfo = async (userId) => {
 module.exports = {
     checkUser, 
     userSignup, 
-    userLogin, 
     userUpdateByInfo, 
     checkUserSchedulByUserId,
     userDeleteByInfo, 
