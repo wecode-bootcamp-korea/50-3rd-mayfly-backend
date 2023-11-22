@@ -26,6 +26,11 @@ const updateTopCategory = async(id,topCategoryName) =>{
   `,[topCategoryName,id])
 }
 
+const deleteTopCategory = async(id) =>{
+  return await appDataSource.query(`
+  DELETE FROM top_categories WHERE id = ${id}
+  `)
+}
 const createSubCategory = async(topCategoryId,topCategoryName) =>{
   return await appDataSource.query(`
   INSERT INTO sub_categories(top_category_id,name) VALUES (${topCategoryId},'${topCategoryName}')
@@ -50,6 +55,12 @@ const updateSubCategory = async(subCategoryName,topCategoryId,id) =>{
   `,[subCategoryName,topCategoryId,id])
 }
 
+const deleteSubCategory = async(id) =>{
+  return await appDataSource.query(`
+  DELETE FROM sub_categories WHERE id = ${id}
+  `)
+}
+
 
 module.exports = {
   createTopCategory,
@@ -59,5 +70,7 @@ module.exports = {
   getSubCategories,
   getSubCategory,
   createSubCategory,
-  updateSubCategory
+  updateSubCategory,
+  deleteTopCategory,
+  deleteSubCategory
 }
