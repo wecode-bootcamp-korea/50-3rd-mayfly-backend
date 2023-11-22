@@ -54,6 +54,6 @@ const start = async () => {
     } catch (err) {
         console.error(err);
     }
-};
+}
 
 start();
