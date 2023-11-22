@@ -1,25 +1,19 @@
 const express = require("express");
 const cors = require("cors");
-const morgan = require("morgan");
-
-const { router } = require("./routes");
+const routes = require("./routes");
 
 const createApp = () => {
   const app = express();
-
-  app.use(express.json());
   app.use(cors());
-  app.use(morgan("combined"));
-
-  app.use(router);
+  app.use(express.json());
+  app.use(routes);
 
   app.get("/", (req, res) => {
     res.status(200).json({
       message: "hello",
     });
   });
-
   return app;
 };
 
-module.exports = { createApp };
+module.exports = createApp;
