@@ -5,6 +5,6 @@ const auth = require("../middleware/auth");
 
 router.post("/", auth.userVerifyToken, likeController.clickLike);
 router.get("/", likeController.getLikesByClass);
-router.get("/:userId", likeController.getAllLikesByUserId);
+router.get("/users", auth.userVerifyToken, likeController.getAllLikesByUserId);
 
 module.exports = router;

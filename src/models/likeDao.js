@@ -30,10 +30,21 @@ const deleteLike = async (userId, classId) => {
 
 //유저 아이디로 전체 좋아요 조회
 const getAllLikesByUserId = async (userId) => {
-  return await appDataSource.query(`SELECT * FROM likes WHERE user_id =?`, [
-    userId,
-  ]);
+  return await appDataSource.query(
+    `SELECT c.id, c.title, p.address, h.name AS hostName, i.image_source, t.name AS topName, sb.name AS subName
+     FROM likes l 
+     JOIN users u ON l.user_id = u.id
+     JOIN classes c ON l.class_id = c.id
+     JOIN places p ON p.id = c.place_id
+     JOIN hosts h ON c.host_id = h.id
+     JOIN images i ON i.class_id = c.id
+     JOIN top_categories t ON t.id = c.top_category_id
+     JOIN sub_categories sb ON sb.id = c.sub_category_id
+     WHERE l.user_id =? AND i.name = "main"`,
+    [userId]
+  );
 };
+
 //유저 아이디로 해당 클래스 좋아요 조회
 const getLike = async (userId, classId) => {
   return await appDataSource.query(
