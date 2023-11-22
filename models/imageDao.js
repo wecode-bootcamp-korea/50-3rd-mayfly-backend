@@ -1,10 +1,5 @@
 const { appDataSource } = require("./datasource");
 
-const createImages = async(imageName,classId,imageUrl) =>{
-  return appDataSource.query(`
-  INSERT INTO images (name,class_id,image_source) VALUES ('${imageName}','${classId}','${imageUrl}')
-  `)
-}
 const getImages = async() => {
   return appDataSource.query(`
   SELECT * FROM images  
@@ -22,7 +17,6 @@ const deleteImage = async(id) =>{
 }
 
 module.exports = {
-  createImages,
   getImages,
   getImage,
   deleteImage

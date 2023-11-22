@@ -2,12 +2,12 @@ const imageService = require('../services/imageService');
 const {error} = require("../middleware/error")
 const uploadImage = async (req, res) => {
   try {
-    const { key} = req.file;
-    const { imageName, classId } = req.body;
-    const imageUrl = `https://mayfly-bucket.s3.ap-northeast-2.amazonaws.com/${key}`;
-    await imageService.saveImage( imageName,classId,imageUrl );
+    const images = req.file
+    const imageKey = images.key
+    const imageUrl = `https://mayfly-bucket.s3.ap-northeast-2.amazonaws.com/${imageKey}`;
     res.json({ imageUrl });
   } catch (err) {
+    console.error('Error during image upload:', err);
     res.status(500).json({ message: 'Internal Server Error' });
   }
 };
