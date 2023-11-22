@@ -1,7 +1,7 @@
 require("dotenv").config();
 
 const { createApp } = require("./app");
-const { appDataSource } = require("./src/models/datasource");
+const { appDataSource } = require("../models/datasource");
 
 const startServer = async () => {
   const app = createApp();
