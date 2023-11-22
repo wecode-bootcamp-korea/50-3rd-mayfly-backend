@@ -13,4 +13,6 @@ router.put('/sub/:id',auth.adminVerifyToken,categoryController.updateSubCategory
 router.delete('/sub/:id',auth.adminVerifyToken,categoryController.deleteSubCategory)
 
 
+
+
 module.exports = router
